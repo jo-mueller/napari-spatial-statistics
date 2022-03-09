@@ -42,6 +42,7 @@ def calculate_spatial_statistics(points_1: PointsData,
                     obsm={"spatial3d": _coordinates[:, :-1]})
 
     sq.gr.spatial_neighbors(adata, coord_type="generic", spatial_key="spatial3d")
+    sq.gr.nhood_enrichment(adata, cluster_key="ID")
     
 
 
