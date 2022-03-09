@@ -6,36 +6,49 @@ see: https://napari.org/plugins/stable/guides.html#widgets
 
 Replace code below according to your needs.
 """
-from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton
 from magicgui import magic_factory
 
+from napari.types import PointsData
 
-class ExampleQWidget(QWidget):
-    # your QWidget.__init__ can optionally request the napari viewer instance
-    # in one of two ways:
-    # 1. use a parameter called `napari_viewer`, as done here
-    # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
-    def __init__(self, napari_viewer):
-        super().__init__()
-        self.viewer = napari_viewer
+from anndata import AnnData
+import scanpy as sc
+import squidpy as sq
+import pandas as pd
 
-        btn = QPushButton("Click me!")
-        btn.clicked.connect(self._on_click)
-
-        self.setLayout(QHBoxLayout())
-        self.layout().addWidget(btn)
-
-    def _on_click(self):
-        print("napari has", len(self.viewer.layers), "layers")
+import numpy as np
 
 
-@magic_factory
-def example_magic_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
+
+# @magic_factory
+def calculate_spatial_statistics(points_1: PointsData,
+                                 points_2: PointsData):
+
+    assert len(points_1.shape) == len(points_2.shape)
+
+    ndims = len(points_1.shape)
+
+    _coordinates =  np.zeros((points_1.shape[0] + points_2.shape[0],
+                              ndims + 1))
 
 
-# Uses the `autogenerate: true` flag in the plugin manifest
-# to indicate it should be wrapped as a magicgui to autogenerate
-# a widget.
-def example_function_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
+    _coordinates[:points_1.shape[0], :-1] = points_1
+    _coordinates[:points_1.shape[0], -1] = 1
+    
+    _coordinates[-points_2.shape[0]:, :-1] = points_2
+    _coordinates[-points_2.shape[0]:, -1] = 2
+
+    adata = AnnData(_coordinates,
+                    obs = {'ID': pd.Categorical(_coordinates[:, -1])},
+                    obsm={"spatial3d": _coordinates[:, :-1]})
+
+    sq.gr.spatial_neighbors(adata, coord_type="generic", spatial_key="spatial3d")
+    
+
+
+if __name__ == "__main__":
+
+
+    points_a = np.random.random((10, 2))
+    points_b = np.random.random((10, 2))
+
+    calculate_spatial_statistics(points_a, points_b)
