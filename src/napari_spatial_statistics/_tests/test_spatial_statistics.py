@@ -1,9 +1,7 @@
 from napari_spatial_statistics import neighborhood_enrichment_test, make_random_points
 import numpy as np
 
-# make_napari_viewer is a pytest fixture that returns a napari viewer object
-# capsys is a pytest fixture that captures stdout and stderr output streams
-def test_nhe_test()):
+def test_nhe_test(make_napari_viewer):
     # make viewer and add an image layer using our fixture
     viewer = make_napari_viewer()
     pts = make_random_points(n_points=200, number_of_layers=2)
