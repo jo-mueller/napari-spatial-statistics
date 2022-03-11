@@ -10,21 +10,22 @@ import numpy as np
 
 from napari.types import LayerDataTuple, List
 
-def make_random_points(n_points=100,
-                       size:int = 100,
-                       dim: int = 3,
-                       number_of_layers:int = 2) -> List[LayerDataTuple]:
+def make_random_points(n_points: int = 1000,
+                        n_classes: int = 3,
+                        spatial_size: int = 100,
+                        dim: int = 3) -> List[LayerDataTuple]:
 
-    colors = ['orange', 'blue', 'magenta', 'pink', 'red', 'green', 'yellow']
+    data = spatial_size * np.random.random((n_points, dim))
+    point_type = np.random.randint(0, n_classes, size=n_points)
 
-    data = [
-        (size * np.random.random((n_points, dim)),
-        {
-            'name': f'Random Points_{idx}',
-            'size': size/40,
-            'edge_width': 0,
-            'face_color': colors[idx % len(colors)]
-         },
-        'points')
-        for idx in range(number_of_layers)]
-    return data
+    colors = np.array(['orange', 'blue', 'magenta', 'pink', 'red', 'green', 'yellow'])
+
+    properties = {'Cell type': point_type}
+    props = {'name': 'Random points',
+             'face_color': colors[point_type],
+             'edge_width': 0,
+             'properties': properties,
+             'size': spatial_size/40}
+
+
+    return (data, props, 'points')
