@@ -12,4 +12,4 @@ def test_point_generation(make_napari_viewer):
 
     assert len(viewer.layers) == 1
 
-    assert len(np.unique(pts[1]['properties'])) == n_classes
+    assert len(np.unique(pts[1]['properties']['Cell type'])) == n_classes
