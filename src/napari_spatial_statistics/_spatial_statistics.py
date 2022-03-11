@@ -70,6 +70,6 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
         ylim = [None, None]
 
     widget = PlotWidget(viewer)
-    widget.plot_from_dataframe(df, xkey='radius', ylim=ylim, xlabel='radius',
+    widget.plot_from_dataframe(df, xkey='distance', ylim=ylim, xlabel='radius',
                                ylabel='Z-score [a.u.]')
     viewer.window.add_dock_widget(widget)
