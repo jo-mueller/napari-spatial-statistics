@@ -14,24 +14,3 @@ def test_example_q_widget(make_napari_viewer, capsys):
     neighborhood_enrichment_test(viewer, viewer.layers[0],
                                  viewer.layers[1], max_radius=300, sampling_rate=5,
                                  n_permutations=1000)
-
-
-    assert len(viewer.layers) == 2
-
-def neighborhood_enrichment(make_napari_viewer, capsys):
-    viewer = make_napari_viewer()
-
-
-    # this time, our widget will be a MagicFactory or FunctionGui instance
-    my_widget = example_magic_widget()
-
-    # if we "call" this object, it'll execute our function
-    my_widget(viewer.layers[0])
-
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == f"you have selected {layer}\n"
-
-if __name__ == "__main__":
-    import napari
-    viewer = napari.Viewer()
