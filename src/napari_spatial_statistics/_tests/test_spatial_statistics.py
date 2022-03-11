@@ -1,4 +1,4 @@
-from napari_spatial_statistics import ExampleQWidget, example_magic_widget
+from napari_spatial_statistics import neighborhood_enrichment_test, make_random_points
 import numpy as np
 
 # make_napari_viewer is a pytest fixture that returns a napari viewer object
@@ -6,21 +6,21 @@ import numpy as np
 def test_example_q_widget(make_napari_viewer, capsys):
     # make viewer and add an image layer using our fixture
     viewer = make_napari_viewer()
-    viewer.add_image(np.random.random((100, 100)))
+    pts = make_random_points(n_points=200, number_of_layers=2)
+    for pt in pts:
+        viewer.add_points(pt[0], **pt[1])
 
     # create our widget, passing in the viewer
-    my_widget = ExampleQWidget(viewer)
+    neighborhood_enrichment_test(viewer, viewer.layers[0],
+                                 viewer.layers[1], max_radius=300, sampling_rate=5,
+                                 n_permutations=1000)
 
-    # call our widget method
-    my_widget._on_click()
 
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == "napari has 1 layers\n"
-    
-def test_example_magic_widget(make_napari_viewer, capsys):
+    assert len(viewer.layers) == 2
+
+def neighborhood_enrichment(make_napari_viewer, capsys):
     viewer = make_napari_viewer()
-    layer = viewer.add_image(np.random.random((100, 100)))
+
 
     # this time, our widget will be a MagicFactory or FunctionGui instance
     my_widget = example_magic_widget()
@@ -31,3 +31,7 @@ def test_example_magic_widget(make_napari_viewer, capsys):
     # read captured output and check that it's as we expected
     captured = capsys.readouterr()
     assert captured.out == f"you have selected {layer}\n"
+
+if __name__ == "__main__":
+    import napari
+    viewer = napari.Viewer()

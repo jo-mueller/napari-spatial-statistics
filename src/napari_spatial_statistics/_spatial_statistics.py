@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 from ._plot_widget import PlotWidget
 
-@register_dock_widget(menu="Measurement > Neighborhood enrichment test")
+@register_dock_widget(menu="Measurement > Neighborhood enrichment test (squidpy, nss)")
 def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
                                  points_1: PointsData,
                                  points_2: PointsData,
