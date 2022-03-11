@@ -3,7 +3,7 @@ import numpy as np
 
 # make_napari_viewer is a pytest fixture that returns a napari viewer object
 # capsys is a pytest fixture that captures stdout and stderr output streams
-def test_example_q_widget(make_napari_viewer, capsys):
+def test_nhe_test()):
     # make viewer and add an image layer using our fixture
     viewer = make_napari_viewer()
     pts = make_random_points(n_points=200, number_of_layers=2)
