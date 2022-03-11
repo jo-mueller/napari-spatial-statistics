@@ -6,10 +6,12 @@ see: https://napari.org/plugins/stable/guides.html#sample-data
 
 Replace code below according to your needs.
 """
-from __future__ import annotations
-import numpy
+import numpy as np
 
+from napari.types import PointsData, LayerDataTuple
 
-def make_sample_data():
-    """Generates an image"""
-    return numpy.random.rand(512, 512)
+def make_random_points(n_points=40,
+                       size:int = 1000,
+                       dim: int = 3) -> PointsData:
+  data = size * np.random.random((n_points, dim))
+  return data
