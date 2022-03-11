@@ -6,51 +6,70 @@ see: https://napari.org/plugins/stable/guides.html#widgets
 
 Replace code below according to your needs.
 """
-from magicgui import magic_factory
+import tqdm
 
-from napari.types import PointsData, ImageData
+from napari.types import PointsData
 
-
-# from anndata import AnnData
-# import squidpy as sq
-# import pandas as pd
+from anndata import AnnData
+import squidpy as sq
+import pandas as pd
 
 import numpy as np
+from napari_tools_menu import register_dock_widget
 
-def test(a:ImageData, b: ImageData) -> ImageData:
-    return a + b
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    import napari.types
+    import napari.viewer
 
-# @magic_factory
-# def neighborhood_enrichment_test(points_1: PointsData,
-#                                  points_2: PointsData):
+from ._plot_widget import PlotWidget
 
-#     assert len(points_1.shape) == len(points_2.shape)
+@register_dock_widget(menu="Measurement > Neighborhood enrichment test")
+def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
+                                 points_1: PointsData,
+                                 points_2: PointsData,
+                                 max_radius: float = 100,
+                                 sampling_rate: float = 1,
+                                 n_permutations=100):
 
-#     ndims = len(points_1.shape)
+    # Make sure that both points layers have same dimension
+    assert len(points_1.data.shape) == len(points_2.data.shape)
 
-#     _coordinates =  np.zeros((points_1.shape[0] + points_2.shape[0],
-#                               ndims + 1))
-
-
-#     _coordinates[:points_1.shape[0], :-1] = points_1
-#     _coordinates[:points_1.shape[0], -1] = 1
-    
-#     _coordinates[-points_2.shape[0]:, :-1] = points_2
-#     _coordinates[-points_2.shape[0]:, -1] = 2
-
-#     adata = AnnData(_coordinates,
-#                     obs = {'ID': pd.Categorical(_coordinates[:, -1])},
-#                     obsm={"spatial3d": _coordinates[:, :-1]})
-
-#     sq.gr.spatial_neighbors(adata, coord_type="generic", spatial_key="spatial3d")
-#     sq.gr.nhood_enrichment(adata, cluster_key="ID")
-    
+    # Make sure to have enough sampling points
+    assert sampling_rate < max_radius/2.0
 
 
-# if __name__ == "__main__":
+    coordinates = np.vstack([points_1.data, points_2.data])
+    ID = np.vstack([[1] * points_1.data.shape[0],
+                    [2] * points_2.data.shape[0]]).flatten()
 
+    adata = AnnData(coordinates,
+                    obs = {'ID': pd.Categorical(ID)},
+                    obsm={"spatial3d": coordinates})
 
-#     points_a = np.random.random((10, 2))
-#     points_b = np.random.random((10, 2))
+    radii = np.arange(sampling_rate, max_radius, sampling_rate, dtype=float)
+    results = []
 
-#     neighborhood_enrichment_test(points_a, points_b)
+    for radius in tqdm.tqdm(radii):
+        sq.gr.spatial_neighbors(adata, coord_type="generic",
+                                spatial_key="spatial3d", radius=radius)
+        results.append(sq.gr.nhood_enrichment(adata, cluster_key="ID",
+                                              n_perms=n_permutations,
+                                              show_progress_bar=False,
+                                              n_jobs=-1, copy=True))
+
+    # Reformat results to dataframe
+    results = np.asarray(results)
+    df = pd.DataFrame()
+    df['distance'] = radii
+    df[f'z_score {points_1.name} vs {points_2.name}'] = results[:, 0, 0, 1]
+
+    if all(np.nanmax(np.abs(results)[:, 0], axis=0).flatten() < 5):
+        ylim = [-5, 5]
+    else:
+        ylim = [None, None]
+
+    widget = PlotWidget(viewer)
+    widget.plot_from_dataframe(df, xkey='radius', ylim=ylim, xlabel='radius',
+                               ylabel='Z-score [a.u.]')
+    viewer.window.add_dock_widget(widget)
