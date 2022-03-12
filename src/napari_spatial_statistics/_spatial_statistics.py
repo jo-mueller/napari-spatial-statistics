@@ -34,9 +34,9 @@ class neighborhood_method(Enum):
 @register_dock_widget(menu="Measurement > Neighborhood enrichment test (squidpy, nss)")
 def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
                                  points: PointsData,
-                                 max_radius: float = 100,
+                                 max_radius: float = 25,
                                  sampling_rate: float = 1,
-                                 n_permutations=100):
+                                 n_permutations=1000):
 
     # Make sure to have enough sampling points
     assert sampling_rate < max_radius/2.0
@@ -45,7 +45,7 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
                                  for key in points[1]['properties'].keys()}
     adata = AnnData(points[0],
                     obs = props,
-                    obsm={"spatial3d": points.data})
+                    obsm={"spatial3d": points[0]})
 
     radii = np.arange(sampling_rate, max_radius, sampling_rate, dtype=float)
     results = []
@@ -53,7 +53,7 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
     for radius in tqdm.tqdm(radii):
         sq.gr.spatial_neighbors(adata, coord_type="generic",
                                 spatial_key="spatial3d", radius=radius)
-        results.append(sq.gr.nhood_enrichment(adata, cluster_key="ID",
+        results.append(sq.gr.nhood_enrichment(adata, cluster_key="Cell type",
                                               n_perms=n_permutations,
                                               show_progress_bar=False,
                                               n_jobs=-1, copy=True))
@@ -62,7 +62,8 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
     results = np.asarray(results)
     df = pd.DataFrame()
     df['distance'] = radii
-    df[f'z_score {points.name}'] = results[:, 0, 0, 1]
+    df[f'z_score {points[1]["name"]}'] = results[:, 0, 0, 1]
+    df = df.dropna()
 
     if all(np.nanmax(np.abs(results)[:, 0], axis=0).flatten() < 5):
         ylim = [-5, 5]
