@@ -18,34 +18,34 @@ import numpy as np
 from napari_tools_menu import register_dock_widget
 
 from typing import TYPE_CHECKING
+from enum import Enum
 if TYPE_CHECKING:
     import napari.types
     import napari.viewer
 
+
 from ._plot_widget import PlotWidget
+
+
+
+class neighborhood_method(Enum):
+    distance = 0
 
 @register_dock_widget(menu="Measurement > Neighborhood enrichment test (squidpy, nss)")
 def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
-                                 points_1: PointsData,
-                                 points_2: PointsData,
-                                 max_radius: float = 100,
+                                 points: PointsData,
+                                 max_radius: float = 25,
                                  sampling_rate: float = 1,
-                                 n_permutations=100):
-
-    # Make sure that both points layers have same dimension
-    assert len(points_1.data.shape) == len(points_2.data.shape)
+                                 n_permutations=1000):
 
     # Make sure to have enough sampling points
     assert sampling_rate < max_radius/2.0
 
-
-    coordinates = np.vstack([points_1.data, points_2.data])
-    ID = np.vstack([[1] * points_1.data.shape[0],
-                    [2] * points_2.data.shape[0]]).flatten()
-
-    adata = AnnData(coordinates,
-                    obs = {'ID': pd.Categorical(ID)},
-                    obsm={"spatial3d": coordinates})
+    props = {key: pd.Categorical(points[1]['properties'][key])
+                                 for key in points[1]['properties'].keys()}
+    adata = AnnData(points[0],
+                    obs = props,
+                    obsm={"spatial3d": points[0]})
 
     radii = np.arange(sampling_rate, max_radius, sampling_rate, dtype=float)
     results = []
@@ -53,7 +53,7 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
     for radius in tqdm.tqdm(radii):
         sq.gr.spatial_neighbors(adata, coord_type="generic",
                                 spatial_key="spatial3d", radius=radius)
-        results.append(sq.gr.nhood_enrichment(adata, cluster_key="ID",
+        results.append(sq.gr.nhood_enrichment(adata, cluster_key="Cell type",
                                               n_perms=n_permutations,
                                               show_progress_bar=False,
                                               n_jobs=-1, copy=True))
@@ -62,7 +62,8 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
     results = np.asarray(results)
     df = pd.DataFrame()
     df['distance'] = radii
-    df[f'z_score {points_1.name} vs {points_2.name}'] = results[:, 0, 0, 1]
+    df[f'z_score {points[1]["name"]}'] = results[:, 0, 0, 1]
+    df = df.dropna()
 
     if all(np.nanmax(np.abs(results)[:, 0], axis=0).flatten() < 5):
         ylim = [-5, 5]

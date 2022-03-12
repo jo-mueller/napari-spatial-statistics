@@ -98,10 +98,8 @@ class PlotWidget(QWidget):
         for iy in range(len(ykey)):
             self.plotwidget.canvas.axes.plot(x, y[:, iy], label = ykey[iy])
 
-        self.plotwidget.canvas.axes.legend()
         self.plotwidget.canvas.axes.set(**kwargs)
-        self.plotwidget.canvas.axes.xaxis.label.set_color('white')
-        self.plotwidget.canvas.axes.yaxis.label.set_color('white')
+        self._postprocess()
         self.plotwidget.canvas.draw()
 
 
@@ -118,3 +116,11 @@ class PlotWidget(QWidget):
         if not filename.endswith('.csv'):
             filename += '.csv'
         self.df.to_csv(filename)
+
+    def _postprocess(self):
+        self.plotwidget.canvas.axes.legend()
+        self.plotwidget.canvas.axes.xaxis.label.set_color('white')
+        self.plotwidget.canvas.axes.yaxis.label.set_color('white')
+
+        self.plotwidget.canvas.axes.grid(which='major', linestyle='--',
+                                         color='white', alpha=0.7)

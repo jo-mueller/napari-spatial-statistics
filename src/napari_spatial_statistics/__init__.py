@@ -23,3 +23,5 @@ if __name__ == '__main__':
 
     pts = make_2ch_non_random_points()
     viewer.add_points(pts[0], **pts[1])
+
+    neighborhood_enrichment_test(viewer, pts)
