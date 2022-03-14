@@ -1,12 +1,11 @@
-def test_spatial_stats_nhe():
+def test_spatial_stats_nhe(make_napari_viewer):
 
-    import napari
     from napari_spatial_statistics._neighborhood import knearest_ckdtree,\
         distance_ckdtree
     from napari_spatial_statistics._sample_data import make_random_points
     from napari_spatial_statistics._spatial_statistics import neighborhood_enrichment_test
 
-    viewer = napari.Viewer()
+    viewer = make_napari_viewer()
 
     pts = make_random_points()
     viewer.add_points(pts[0], **pts[1])
