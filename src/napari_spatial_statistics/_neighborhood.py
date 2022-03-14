@@ -19,6 +19,9 @@ def distance_ckdtree(points: Points, radius: float = 1) -> Points:
 
     from scipy.spatial import cKDTree
 
+    if isinstance(points, tuple):
+        points = Points(points[0], **points[1])
+
     tree = cKDTree(points.data)
     neighbors = tree.query_ball_point(points.data, r=radius)
 
@@ -32,6 +35,9 @@ def distance_ckdtree(points: Points, radius: float = 1) -> Points:
 def distance_squidpy(points: Points, radius: float) -> Points:
     from anndata import AnnData
     import squidpy as sq
+
+    if isinstance(points, tuple):
+        points = Points(points[0], **points[1])
 
     adata = AnnData(points[0],obs = points[1]['properties'],
                     obsm={"spatial3d": points[0]})
@@ -51,6 +57,9 @@ def distance_squidpy(points: Points, radius: float) -> Points:
 def knearest_ckdtree(points: Points, n_neighbors: int = 5) -> Points:
 
     from scipy.spatial import cKDTree
+
+    if isinstance(points, tuple):
+        points = Points(points[0], **points[1])
 
     tree = cKDTree(points.data)
     neighbors = tree.query(list(points.data), k=n_neighbors)

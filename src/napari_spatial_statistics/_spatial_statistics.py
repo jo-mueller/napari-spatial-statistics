@@ -28,6 +28,9 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
 
     from napari_spatial_statistics._utils import list_of_neighbors_to_adjacency_matrix
 
+    if isinstance(points, tuple):
+        points = Points(points[0], **points[1])
+
     neighbors = points.properties['neighbors']
     _neighbors = [None] * len(neighbors)
     for idx, entry in enumerate(neighbors):
