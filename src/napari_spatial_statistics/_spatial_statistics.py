@@ -6,54 +6,19 @@ see: https://napari.org/plugins/stable/guides.html#widgets
 
 Replace code below according to your needs.
 """
-import tqdm
-
-from napari.types import PointsData
 from napari.layers import Points
 
 from anndata import AnnData
 import squidpy as sq
 import pandas as pd
-import numpy as np
 from scipy import sparse
 
 from napari_tools_menu import register_dock_widget
-import warnings
 
 from typing import TYPE_CHECKING
-from enum import Enum
 if TYPE_CHECKING:
     import napari.types
     import napari.viewer
-
-
-from ._plot_widget import PlotWidget
-
-class spatial_statistics_method(Enum):
-    ripley_function = 0
-    newman_assortativity = 1
-    centrality_score = 2
-    cluster_cooccurrence = 3
-    neighborhood_enrichment_test = 4
-    object_object_correlation = 5
-
-
-
-
-# def spatial_statistics(viewer: 'napari.viewer.Viewer',
-#                         points: PointsData,
-#                         test_method: spatial_statistics_method):
-
-#     if isinstance(test_method, spatial_statistics_method):
-#         test_method = test_method.value
-
-#     props = list(points[1]['properties'].keys())
-#     if len(props) > 1 and test_method.value in [0, 1, 2]:
-#         warnings.warn("Test is intended for single object type. All objects " +
-#                       "will be considered as same type.")
-
-#     # annotated_data = _create_neighborhood(points, nh_method)
-
 
 
 @register_dock_widget(menu="Measurement > Spatial statistics (squidpy, nss)")
