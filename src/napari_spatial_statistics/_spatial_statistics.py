@@ -6,71 +6,47 @@ see: https://napari.org/plugins/stable/guides.html#widgets
 
 Replace code below according to your needs.
 """
-import tqdm
-
-from napari.types import PointsData
+from napari.layers import Points
 
 from anndata import AnnData
 import squidpy as sq
 import pandas as pd
+from scipy import sparse
 
-import numpy as np
 from napari_tools_menu import register_dock_widget
 
 from typing import TYPE_CHECKING
-from enum import Enum
 if TYPE_CHECKING:
     import napari.types
     import napari.viewer
 
 
-from ._plot_widget import PlotWidget
-
-
-
-class neighborhood_method(Enum):
-    distance = 0
-
-@register_dock_widget(menu="Measurement > Neighborhood enrichment test (squidpy, nss)")
+@register_dock_widget(menu="Measurement > Spatial statistics (squidpy, nss)")
 def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
-                                 points: PointsData,
-                                 max_radius: float = 25,
-                                 sampling_rate: float = 1,
+                                 points: Points,
                                  n_permutations=1000):
 
-    # Make sure to have enough sampling points
-    assert sampling_rate < max_radius/2.0
+    from napari_spatial_statistics._utils import list_of_neighbors_to_adjacency_matrix
 
-    props = {key: pd.Categorical(points[1]['properties'][key])
-                                 for key in points[1]['properties'].keys()}
-    adata = AnnData(points[0],
-                    obs = props,
-                    obsm={"spatial3d": points[0]})
+    if isinstance(points, tuple):
+        points = Points(points[0], **points[1])
 
-    radii = np.arange(sampling_rate, max_radius, sampling_rate, dtype=float)
-    results = []
+    neighbors = points.properties['neighbors']
+    _neighbors = [None] * len(neighbors)
+    for idx, entry in enumerate(neighbors):
+        _neighbors[idx] = [int(i) for i in entry.split(',')]
 
-    for radius in tqdm.tqdm(radii):
-        sq.gr.spatial_neighbors(adata, coord_type="generic",
-                                spatial_key="spatial3d", radius=radius)
-        results.append(sq.gr.nhood_enrichment(adata, cluster_key="Cell type",
-                                              n_perms=n_permutations,
-                                              show_progress_bar=False,
-                                              n_jobs=-1, copy=True))
+    adj_matrix = list_of_neighbors_to_adjacency_matrix(_neighbors)
+    adj_matrix = sparse.csr_matrix(adj_matrix)
 
-    # Reformat results to dataframe
-    results = np.asarray(results)
-    df = pd.DataFrame()
-    df['distance'] = radii
-    df[f'z_score {points[1]["name"]}'] = results[:, 0, 0, 1]
-    df = df.dropna()
 
-    if all(np.nanmax(np.abs(results)[:, 0], axis=0).flatten() < 5):
-        ylim = [-5, 5]
-    else:
-        ylim = [None, None]
+    adata = AnnData(points.data,
+                    obs = {'Cell type': pd.Categorical(points.properties['Cell type'])},
+                    obsp = {'spatial_connectivities': adj_matrix},
+                    obsm={"spatial3d": points.data})
 
-    widget = PlotWidget(viewer)
-    widget.plot_from_dataframe(df, xkey='distance', ylim=ylim, xlabel='radius',
-                               ylabel='Z-score [a.u.]')
-    viewer.window.add_dock_widget(widget)
+    result = sq.gr.nhood_enrichment(adata, cluster_key="Cell type",
+                                    n_perms=n_permutations,
+                                    show_progress_bar=False,
+                                    n_jobs=-1, copy=True)
+    print(result)
