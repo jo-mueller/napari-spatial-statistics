@@ -15,8 +15,7 @@ from napari_spatial_statistics._utils import adjacency_matrix_to_list_of_neighbo
     set_features
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (scipy, nss)")
-def distance_ckdtree(points: Points,
-                     radius: float = 1) -> PointsData:
+def distance_ckdtree(points: Points, radius: float = 1) -> Points:
 
     from scipy.spatial import cKDTree
 
@@ -27,9 +26,10 @@ def distance_ckdtree(points: Points,
     points.properties['neighbors'] = neighbors_str
     set_features(points, points.properties)
 
+    return points
+
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (squidpy, nss)")
-def distance_squidpy(points: Points,
-                     radius: float):
+def distance_squidpy(points: Points, radius: float) -> Points:
     from anndata import AnnData
     import squidpy as sq
 
@@ -45,9 +45,10 @@ def distance_squidpy(points: Points,
     points.properties['neighbors'] = [str(x)[1:-1] for x in list(lst_of_neighbors)]
     set_features(points, points.properties)
 
+    return points
+
 @register_dock_widget(menu="Neighborhood > k-nearest neighbors (scipy, nss)")
-def knearest_ckdtree(points: Points,
-                     n_neighbors: int = 5) -> LayerDataTuple:
+def knearest_ckdtree(points: Points, n_neighbors: int = 5) -> Points:
 
     from scipy.spatial import cKDTree
 
@@ -61,3 +62,5 @@ def knearest_ckdtree(points: Points,
     neighbors_str = [",".join(map(str, neighbors[1][i])) for i in range(len(neighbors[1]))]
     points.properties['neighbors'] = neighbors_str
     set_features(points, points.properties)
+
+    return points
