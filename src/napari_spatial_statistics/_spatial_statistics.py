@@ -49,4 +49,5 @@ def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
                                     n_perms=n_permutations,
                                     show_progress_bar=False,
                                     n_jobs=-1, copy=True)
-    print(result)
+
+    
