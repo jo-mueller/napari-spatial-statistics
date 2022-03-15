@@ -6,16 +6,18 @@ import pandas as pd
 from napari.layers import Points
 from napari.types import PointsData, LayerDataTuple
 from napari_tools_menu import register_dock_widget
+from ._show_neighbors import properties_to_table
 
 if TYPE_CHECKING:
     import napari.types
-    import napari.viewer
 
 from napari_spatial_statistics._utils import adjacency_matrix_to_list_of_neighbors,\
     set_features
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (scipy, nss)")
-def distance_ckdtree(points: Points, radius: float = 1) -> Points:
+def distance_ckdtree(points: Points, radius: float = 1,
+                     show_neighborhood: bool = True,
+                     viewer: 'napari.viewer.Viewer' = None):
 
     from scipy.spatial import cKDTree
 
@@ -29,10 +31,13 @@ def distance_ckdtree(points: Points, radius: float = 1) -> Points:
     points.properties['neighbors'] = neighbors_str
     set_features(points, points.properties)
 
-    return points
+    if show_neighborhood:
+        properties_to_table(viewer, points)
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (squidpy, nss)")
-def distance_squidpy(points: Points, radius: float) -> Points:
+def distance_squidpy(points: Points, radius: float,
+                     show_neighborhood: bool = True,
+                     viewer: 'napari.viewer.Viewer' = None):
     from anndata import AnnData
     import squidpy as sq
 
@@ -51,10 +56,13 @@ def distance_squidpy(points: Points, radius: float) -> Points:
     points.properties['neighbors'] = [str(x)[1:-1] for x in list(lst_of_neighbors)]
     set_features(points, points.properties)
 
-    return points
+    if show_neighborhood:
+        properties_to_table(viewer, points)
 
 @register_dock_widget(menu="Neighborhood > k-nearest neighbors (scipy, nss)")
-def knearest_ckdtree(points: Points, n_neighbors: int = 5) -> Points:
+def knearest_ckdtree(points: Points, n_neighbors: int = 5,
+                     show_neighborhood: bool = True,
+                     viewer: 'napari.viewer.Viewer' = None):
 
     from scipy.spatial import cKDTree
 
@@ -72,4 +80,5 @@ def knearest_ckdtree(points: Points, n_neighbors: int = 5) -> Points:
     points.properties['neighbors'] = neighbors_str
     set_features(points, points.properties)
 
-    return points
+    if show_neighborhood:
+        properties_to_table(viewer, points)
