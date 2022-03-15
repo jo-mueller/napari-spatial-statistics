@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import TYPE_CHECKING
 from napari.layers import Points
 from napari_tools_menu import register_dock_widget
