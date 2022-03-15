@@ -10,8 +10,8 @@ def test_neighborhood(make_napari_viewer):
     pts = make_random_points()
     viewer.add_points(pts[0], **pts[1])
 
-    knearest_ckdtree(viewer.layers[0])
-    distance_ckdtree(viewer.layers[0])
+    knearest_ckdtree(viewer.layers[0], show_neighborhood=False)
+    distance_ckdtree(viewer.layers[0], show_neighborhood=False)
 
 if __name__ == "__main__":
     test_neighborhood()
