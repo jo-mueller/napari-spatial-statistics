@@ -43,7 +43,10 @@ def delaunay_scipy(points: Points) -> Points:
     if isinstance(points, tuple):
         points = Points(points[0], **points[1])
 
-    neighbors = Delaunay(points[0])
+    tri = Delaunay(points.data)
+    indptr, indices = tri.vertex_neighbor_vertices
+
+    neighbors = [indices[indptr[k]:indptr[k+1]] for k in range(points.data.shape[0])]
 
     # Convert to str format
     neighbors_str = [",".join(map(str, neighbors[i])) for i in range(len(neighbors))]
