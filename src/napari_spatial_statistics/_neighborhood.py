@@ -1,21 +1,22 @@
 from enum import Enum
 from typing import TYPE_CHECKING
-import tqdm
-import pandas as pd
-
 from napari.layers import Points
-from napari.types import PointsData, LayerDataTuple
 from napari_tools_menu import register_dock_widget
 
 if TYPE_CHECKING:
     import napari.types
-    import napari.viewer
 
 from napari_spatial_statistics._utils import adjacency_matrix_to_list_of_neighbors,\
     set_features
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (scipy, nss)")
 def distance_ckdtree(points: Points, radius: float = 1) -> Points:
+    """Calculate neighborhood graph based on ckdtree distance.
+
+    See also
+    --------
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.cKDTree.html
+    """
 
     from scipy.spatial import cKDTree
 
@@ -31,8 +32,36 @@ def distance_ckdtree(points: Points, radius: float = 1) -> Points:
 
     return points
 
+@register_dock_widget(menu="Neighborhood > Delaunay-neighborhood (scipy, nss)")
+def delaunay_scipy(points: Points) -> Points:
+    """Calculate delaunay tesselation using scipy.
+
+    See also
+    --------
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html
+    """
+    from scipy.spatial import Delaunay
+    if isinstance(points, tuple):
+        points = Points(points[0], **points[1])
+
+    neighbors = Delaunay(points[0])
+
+    # Convert to str format
+    neighbors_str = [",".join(map(str, neighbors[i])) for i in range(len(neighbors))]
+    points.properties['neighbors'] = neighbors_str
+    set_features(points, points.properties)
+
+    return points
+
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (squidpy, nss)")
 def distance_squidpy(points: Points, radius: float) -> Points:
+    """Calculate distance-based neighborhood graph with squidpy.
+    
+    See also
+    --------
+    https://squidpy.readthedocs.io/en/latest/auto_examples/graph/compute_spatial_neighbors.html
+        
+    """
     from anndata import AnnData
     import squidpy as sq
 
@@ -55,6 +84,13 @@ def distance_squidpy(points: Points, radius: float) -> Points:
 
 @register_dock_widget(menu="Neighborhood > k-nearest neighbors (scipy, nss)")
 def knearest_ckdtree(points: Points, n_neighbors: int = 5) -> Points:
+    """Calculate k-nearest neighborhood graph with scipy.
+
+    See also
+    --------
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.cKDTree.html
+
+    """
 
     from scipy.spatial import cKDTree
 
