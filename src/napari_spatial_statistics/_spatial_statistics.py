@@ -6,6 +6,7 @@ see: https://napari.org/plugins/stable/guides.html#widgets
 
 Replace code below according to your needs.
 """
+from napari.types import PointsData
 from napari.layers import Points
 
 from anndata import AnnData
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
 
 @register_dock_widget(menu="Measurement > Spatial statistics (squidpy, nss)")
 def neighborhood_enrichment_test(viewer: 'napari.viewer.Viewer',
-                                 points: Points,
+                                 points: PointsData,
                                  n_permutations=1000):
 
     from napari_spatial_statistics._utils import list_of_neighbors_to_adjacency_matrix
