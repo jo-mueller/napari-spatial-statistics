@@ -21,7 +21,7 @@ def make_random_points(n_points: int = 1000,
     data = spatial_size * np.random.random((n_points, dim))
     point_type = np.random.randint(0, n_classes, size=n_points)
 
-    properties = {'Cell type': point_type, 'Label': np.arange(0, n_points, 1)}
+    properties = {'Label': np.arange(0, n_points, 1), 'Cell type': point_type}
     props = {'name': 'Random points',
              'face_color': colors[point_type],
              'edge_width': 0,
@@ -44,7 +44,7 @@ def make_2ch_non_random_points(n_points: int = 1000,
                            np.ones(n_points, dtype=int)]).flatten()
     data = np.vstack([data_ch1, data_ch2])
 
-    properties = {'Cell type': point_type, 'Label': np.arange(0, n_points, 1)}
+    properties = {'Label': np.arange(0, n_points*2, 1), 'Cell type': point_type}
     props = {'name': 'Random points',
              'face_color': colors[point_type],
              'edge_width': 0,
