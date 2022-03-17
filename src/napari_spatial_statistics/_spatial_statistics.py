@@ -140,3 +140,5 @@ def neighborhood_enrichment_test(points: PointsData,
 
     sq.gr.nhood_enrichment(adata, cluster_key=on_feature)
     sq.pl.nhood_enrichment(adata, cluster_key=on_feature, ax=ax)
+    
+    return adata.uns[f'{on_feature}_nhood_enrichment']
