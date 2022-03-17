@@ -1,5 +1,3 @@
-import numpy as np
-
 def test_neighborhood(make_napari_viewer):
 
     from napari_spatial_statistics._neighborhood import knearest_ckdtree,\
