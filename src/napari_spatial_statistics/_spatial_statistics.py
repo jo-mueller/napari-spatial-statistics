@@ -27,13 +27,16 @@ from qtpy.QtWidgets import (
 from magicgui.widgets import create_widget
 
 from napari_tools_menu import register_dock_widget
-from ._plot_widget import PlotWidget
 from napari.layers import Points
+from napari.types import PointsData
+
+from ._plot_widget import PlotWidget
+from napari_spatial_statistics._utils import list_of_neighbors_to_adjacency_matrix
+
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import napari.types
-    import napari.viewer
 
 
 @register_dock_widget(menu="Measurement > Spatial statistics (squidpy, nss)")
@@ -56,9 +59,12 @@ class nhe_test_widget(QWidget):
 
     def _run(self):
         plt_widget = PlotWidget(self.viewer)
-        neighborhood_enrichment_test(points = self.layer_select.value,
-                                     on_feature = self.property_select.currentText(),
-                                     n_permutations= self.spinbox_n_permutations.value(),
+        
+        selected_layer = self.layer_select.value
+        neighborhood_enrichment_test(points=selected_layer.data,
+                                     properties=selected_layer.properties,
+                                     on_feature=self.property_select.currentText(),
+                                     n_permutations=self.spinbox_n_permutations.value(),
                                      ax=plt_widget.plotwidget.canvas.axes)
 
         plt_widget.plotwidget.canvas.draw()
@@ -81,7 +87,8 @@ class nhe_test_widget(QWidget):
         return super().eventFilter(obj, event)
 
 
-def neighborhood_enrichment_test(points: Points,
+def neighborhood_enrichment_test(points: PointsData,
+                                 properties: dict,
                                  on_feature: str,
                                  n_permutations=1000,
                                  ax = None):
@@ -115,14 +122,9 @@ def neighborhood_enrichment_test(points: Points,
     --------
     https://squidpy.readthedocs.io/en/latest/api/squidpy.pl.nhood_enrichment.html
     """
-
-    from napari_spatial_statistics._utils import list_of_neighbors_to_adjacency_matrix
-    import numpy as np
-
-    if isinstance(points, tuple):
-        points = Points(points[0], **points[1])
-
-    neighbors = points.properties['neighbors']
+    assert 'neighbors' in list(properties.keys())
+    
+    neighbors = properties['neighbors']
     _neighbors = [None] * len(neighbors)
     for idx, entry in enumerate(neighbors):
         _neighbors[idx] = [int(i) for i in entry.split(',')]
@@ -130,10 +132,11 @@ def neighborhood_enrichment_test(points: Points,
     adj_matrix = list_of_neighbors_to_adjacency_matrix(_neighbors)
     adj_matrix = sparse.csr_matrix(adj_matrix)
 
-    adata = AnnData(points.data,
-                    obs = {'Cell type': pd.Categorical(points.properties[on_feature])},
+    adata = AnnData(points,
+                    obs = {'Cell type': pd.Categorical(properties[on_feature])},
                     obsp = {'spatial_connectivities': adj_matrix},
-                    obsm={"spatial3d": points.data})
+                    obsm={"spatial3d": points.data},
+                    dtype=points.dtype)
 
     sq.gr.nhood_enrichment(adata, cluster_key=on_feature)
     sq.pl.nhood_enrichment(adata, cluster_key=on_feature, ax=ax)
