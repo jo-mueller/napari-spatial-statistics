@@ -11,7 +11,6 @@ def test_point_generation(make_napari_viewer):
     viewer.add_points(pts[0], **pts[1])
 
     assert len(viewer.layers) == 1
-
     assert len(np.unique(pts[1]['properties']['Cell type'])) == n_classes
 
 def test_correlated_data_generator(make_napari_viewer):
