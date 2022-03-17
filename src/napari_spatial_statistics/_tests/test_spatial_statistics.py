@@ -12,7 +12,7 @@ def tst_spatial_stats_nhe(make_napari_viewer):
     pts = knearest_ckdtree(pts, n_neighbors=5)
     neighborhood_enrichment_test(viewer, pts)
 
-def test_spatial_stats_nhe2(make_napari_viewer):
+def tst_spatial_stats_nhe2(make_napari_viewer):
 
     from napari_spatial_statistics._neighborhood import distance_ckdtree
     from napari_spatial_statistics._sample_data import make_random_points
@@ -33,4 +33,4 @@ def test_spatial_stats_nhe2(make_napari_viewer):
 
 if __name__ == '__main__':
     import napari
-    test_spatial_stats_nhe2(napari.Viewer)
+    tst_spatial_stats_nhe2(napari.Viewer)
