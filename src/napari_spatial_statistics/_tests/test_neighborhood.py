@@ -12,4 +12,5 @@ def test_neighborhood(make_napari_viewer):
     distance_ckdtree(viewer.layers[0], show_neighborhood=False)
 
 if __name__ == "__main__":
-    test_neighborhood()
+    import napari
+    test_neighborhood(napari.Viewer)
