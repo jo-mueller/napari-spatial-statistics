@@ -8,6 +8,13 @@ from qtpy.QtWidgets import QWidget,\
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+import matplotlib as mpl
+
+COLOR='white'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
 
 from napari_tools_menu import register_dock_widget
 
@@ -31,7 +38,6 @@ class MplCanvas(FigureCanvas):
         self.axes.grid(which='major', linestyle='--', color='white', alpha=0.6)
         self.axes.tick_params(axis='both', colors='white')
 
-
         FigureCanvas.__init__(self, self.fig)       # initialize canvas
         FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding,
                                    QSizePolicy.Expanding)
@@ -45,7 +51,7 @@ class matplotlibWidget(QWidget):
         QWidget.__init__(self, parent)
         # save canvas and toolbar
         self.canvas = MplCanvas()
-        self.toolbar = NavigationToolbar(self.canvas, self)        
+        self.toolbar = NavigationToolbar(self.canvas, self)
         # set layout and add them to widget
         self.vbl = QVBoxLayout()
         self.vbl.addWidget(self.toolbar)

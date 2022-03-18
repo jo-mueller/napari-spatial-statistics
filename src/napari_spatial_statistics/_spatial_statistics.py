@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     import napari.types
 
 
-@register_dock_widget(menu="Measurement > Spatial statistics (squidpy, nss)")
+@register_dock_widget(menu="Measurement > Neighborhood enrichment test (squidpy, nss)")
 class nhe_test_widget(QWidget):
     def __init__(self, napari_viewer):
         super().__init__()
@@ -59,7 +59,7 @@ class nhe_test_widget(QWidget):
 
     def _run(self):
         plt_widget = PlotWidget(self.viewer)
-        
+
         selected_layer = self.layer_select.value
         neighborhood_enrichment_test(points=selected_layer.data,
                                      properties=selected_layer.properties,
@@ -123,7 +123,7 @@ def neighborhood_enrichment_test(points: PointsData,
     https://squidpy.readthedocs.io/en/latest/api/squidpy.pl.nhood_enrichment.html
     """
     assert 'neighbors' in list(properties.keys())
-    
+
     neighbors = properties['neighbors']
     _neighbors = [None] * len(neighbors)
     for idx, entry in enumerate(neighbors):
@@ -140,5 +140,5 @@ def neighborhood_enrichment_test(points: PointsData,
 
     sq.gr.nhood_enrichment(adata, cluster_key=on_feature)
     sq.pl.nhood_enrichment(adata, cluster_key=on_feature, ax=ax)
-    
+
     return adata.uns[f'{on_feature}_nhood_enrichment']
