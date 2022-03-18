@@ -30,21 +30,31 @@ def make_random_points(n_points: int = 1000,
 
     return (data, props, 'points')
 
-def make_2ch_non_random_points(n_points: int = 1000,
-                               spatial_size: int = 100,
-                               sigma: float = 2,
-                               dim: int = 3) -> List[LayerDataTuple]:
+def make_non_random_points(n_points: int = 1000,
+                           n_classes: int = 3,
+                           spatial_size: int = 100,
+                           sigma: float = 2,
+                           dim: int = 3) -> List[LayerDataTuple]:
 
-    data_ch1 = spatial_size * np.random.random((n_points, dim))
-    noise = np.random.normal(scale=sigma, size=data_ch1.shape)
+    pts_per_channel = n_points//n_classes
+    data_chx = []
 
-    data_ch2 = data_ch1 + noise
+    for idx in range(n_classes):
+        if len(data_chx) == 0:
+            data_chx.append(
+                spatial_size * np.random.random((pts_per_channel, dim))
+                )
+        else:
+            noise = np.random.normal(scale=sigma, size=data_chx[0].shape)
+            data_chx.append(
+                data_chx[idx-1] + noise
+                )
 
-    point_type = np.array([np.zeros(n_points, dtype=int),
-                           np.ones(n_points, dtype=int)]).flatten()
-    data = np.vstack([data_ch1, data_ch2])
+    data = np.vstack(data_chx)
+    point_type = np.array([[i]*pts_per_channel for i in range(n_classes)]).flatten()
 
-    properties = {'Label': np.arange(0, n_points*2, 1), 'Cell type': point_type}
+    properties = {'Label': np.arange(0, pts_per_channel*n_classes, 1),
+                  'Cell type': point_type}
     props = {'name': 'Random points',
              'face_color': colors[point_type],
              'edge_width': 0,
