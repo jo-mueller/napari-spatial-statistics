@@ -71,7 +71,7 @@ The dropdown menus allow to set
 
 Running the test generates a neighborhood enrichment matrix that denotes the enrichment score between all types of object:
 
-|Result for random points (`n_classes=3`)| Random for colocalized points (`n_classes=2`)|
+|Result for random points (`n_classes=3`)| Random for colocalized points (`n_classes=3, sigma=3.0`)|
 |--|--|
 |<img src="./docs/imgs/3_nhe_test_2.png" width=100% height=100%>|<img src="./docs/imgs/3_nhe_test_3.png" width=100% height=100%>|
 
