@@ -38,9 +38,6 @@ class MplCanvas(FigureCanvas):
         self.axes.grid(which='major', linestyle='--', color='white', alpha=0.6)
         self.axes.tick_params(axis='both', colors='white')
 
-
-
-
         FigureCanvas.__init__(self, self.fig)       # initialize canvas
         FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding,
                                    QSizePolicy.Expanding)
