@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from napari.layers import Points
 from napari_tools_menu import register_dock_widget
-from .utils import properties_to_table
+from ._utils import properties_to_table
 
 if TYPE_CHECKING:
     import napari.types
