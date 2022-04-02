@@ -11,7 +11,30 @@ import numpy as np
 from napari.types import LayerDataTuple, List
 
 
-colors = np.array(['orange', 'blue', 'magenta', 'pink', 'red', 'green', 'yellow'])
+colors = np.array(['bop orange', 'bop blue', 'magenta', 'pink', 'red', 'green', 'yellow'])
+
+def make_random_spots(n_spots: int = 1000,
+                      n_classes: int = 2,
+                      spatial_size: int = 100,
+                      sigma: float = 2,
+                      dim: int = 3) -> List[LayerDataTuple]:
+    from skimage import filters
+
+    images = []
+
+    for idx in range(n_classes):
+        image = np.zeros(spatial_size**dim, dtype=float)
+        locations = np.random.randint(0, spatial_size**dim, size=n_spots)
+        image[locations] = 1
+        image = np.reshape(image, newshape=([spatial_size] * dim))
+        image = filters.gaussian(image, sigma)
+        image = image/image.max()
+        images.append((image,
+                       {'name': f'Marker {idx}',
+                        'colormap': colors[idx]},
+                       'image'))
+
+    return images
 
 def make_random_points(n_points: int = 1000,
                         n_classes: int = 3,

@@ -133,7 +133,7 @@ def neighborhood_enrichment_test(points: PointsData,
     adj_matrix = sparse.csr_matrix(adj_matrix)
 
     adata = AnnData(points,
-                    obs = {'Cell type': pd.Categorical(properties[on_feature])},
+                    obs = {on_feature: pd.Categorical(properties[on_feature])},
                     obsp = {'spatial_connectivities': adj_matrix},
                     obsm={"spatial3d": points.data},
                     dtype=points.dtype)

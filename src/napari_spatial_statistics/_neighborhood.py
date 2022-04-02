@@ -1,12 +1,8 @@
-from enum import Enum
 from typing import TYPE_CHECKING
-import tqdm
-import pandas as pd
 
 from napari.layers import Points
-from napari.types import PointsData, LayerDataTuple
 from napari_tools_menu import register_dock_widget
-from ._show_neighbors import properties_to_table
+from ._utils import properties_to_table
 
 if TYPE_CHECKING:
     import napari.types
