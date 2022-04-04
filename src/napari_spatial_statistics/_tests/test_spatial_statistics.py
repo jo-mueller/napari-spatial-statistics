@@ -60,7 +60,6 @@ def test_spatial_stats3(make_napari_viewer):
     # put it to the properties.
     neighbors_str = [",".join(map(str, neighbors[1][i])) for i in range(len(neighbors[1]))]
     pts_layer.properties['neighbors'] = neighbors_str
-    set_features(pts_layer, pts_layer.properties)
 
     neighborhood_enrichment_test(pts_layer.data, pts_layer.properties, on_feature='Cell type',
                                  n_permutations=100, ax=plt_widget.plotwidget.canvas.axes)
