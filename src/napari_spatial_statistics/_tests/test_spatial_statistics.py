@@ -34,7 +34,7 @@ def tst_spatial_stats_nhe2(make_napari_viewer):
     assert 'zscore' in list(result.keys()) and 'count' in list(result.keys())
     assert np.array_equal(result['zscore'].shape, np.array([n_classes, n_classes]))
 
-def tst_spatial_stats3(make_napari_viewer):
+def test_spatial_stats3(make_napari_viewer):
     from napari_spatial_statistics._neighborhood import distance_ckdtree
     from napari_spatial_statistics._spatial_statistics import nhe_test_widget, neighborhood_enrichment_test
     from napari_spatial_statistics._plot_widget import PlotWidget
