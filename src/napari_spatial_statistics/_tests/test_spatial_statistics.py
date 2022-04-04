@@ -36,6 +36,8 @@ def test_spatial_stats3(make_napari_viewer):
     from napari_spatial_statistics._neighborhood import knearest_ckdtree
     from napari_spatial_statistics._spatial_statistics import nhe_test_widget, neighborhood_enrichment_test
     from napari_spatial_statistics._plot_widget import PlotWidget
+    from scipy.spatial import cKDTree
+    from napari_spatial_statistics._utils import set_features
 
     viewer = make_napari_viewer()
     widget = nhe_test_widget(viewer)
@@ -49,7 +51,17 @@ def test_spatial_stats3(make_napari_viewer):
     pts_layer = viewer.add_points(pts[0], **pts[1])
 
     # Calc neighborhood
-    knearest_ckdtree(pts_layer, n_neighbors=10)
+    tree = cKDTree(pts_layer.data)
+    neighbors = tree.query(list(pts_layer.data), k=10)
+
+    #TODO: Find a nicer way to store list(s) of neighbors
+    # Really dirty hack: napari does not allow property entries to be a list of
+    # multiple items. Hence, we convert the list of neighbors to a string and
+    # put it to the properties.
+    neighbors_str = [",".join(map(str, neighbors[1][i])) for i in range(len(neighbors[1]))]
+    pts_layer.properties['neighbors'] = neighbors_str
+    set_features(pts_layer, pts_layer.properties)
+
     neighborhood_enrichment_test(pts_layer.data, pts_layer.properties, on_feature='Cell type',
                                  n_permutations=100, ax=plt_widget.plotwidget.canvas.axes)
 
