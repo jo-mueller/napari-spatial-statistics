@@ -21,7 +21,7 @@ Napari-spatial-statistics currently allows analyzing spatial distributions of po
 
 | | Points layer data |  Image layer data  |
 | ---| ---| --- |
-|Neighborhood enrichment test | <img src="./docs/imgs/nhe_points/1_generate_data_2.png" width=45% height=45%> |
+|Neighborhood enrichment test |<img src="./docs/imgs/nhe_points/2_neighborhood_1.png" width="441" height="250"> | <img src="./docs/imgs/nhe_spots/1_generated_data.png" width="400" height="250">
 
 
 
