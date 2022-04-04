@@ -27,7 +27,7 @@ def distance_ckdtree(points: Points, radius: float = 1,
     points.properties['neighbors'] = neighbors_str
     set_features(points, points.properties)
 
-    if show_neighborhood:
+    if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (squidpy, nss)")
@@ -52,7 +52,7 @@ def distance_squidpy(points: Points, radius: float,
     points.properties['neighbors'] = [str(x)[1:-1] for x in list(lst_of_neighbors)]
     set_features(points, points.properties)
 
-    if show_neighborhood:
+    if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
 
 @register_dock_widget(menu="Neighborhood > k-nearest neighbors (scipy, nss)")
@@ -76,5 +76,5 @@ def knearest_ckdtree(points: Points, n_neighbors: int = 5,
     points.properties['neighbors'] = neighbors_str
     set_features(points, points.properties)
 
-    if show_neighborhood:
+    if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
