@@ -67,7 +67,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -c defaults scipy
-          conda install -c conda-forge pytables
+          conda install -c conda-forge pytables h5py
           python -m pip install --upgrade pip
           pip install pytest pytest-cov PyQt5 pytest-qt pytest-xvfb
           pip install -e .
