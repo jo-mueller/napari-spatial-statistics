@@ -54,6 +54,6 @@ def detect_maxima(Image: Image,
                                     threshold_abs=threshold_value)
     props = {'size': Image.data.shape[0]/40,
              'edge_width': 0,
-             'name': Image.name}
+             'name': Image.name + '_maxima'}
 
     return (points, props, 'points')
