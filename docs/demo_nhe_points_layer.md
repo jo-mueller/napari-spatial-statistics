@@ -1,7 +1,12 @@
 # Neighborhood enrichment test in random points layer
 
+This tutorial explains how to conduct a neighborhpood enrichment test as explained by [Wählby et al. (2022)](https://www.frontiersin.org/articles/10.3389/fphys.2022) using the [Squidpy](https://squidpy.readthedocs.io/en/stable/index.html) spatial statistics platform.
+
 ### Data generation
-<img src="./docs/imgs/1_generate_data.png" width=45% height=45%> <img src="./docs/imgs/1_generate_data_1.PNG" width=45% height=45%>
+
+You  can use the napari-spatial-statistics package to generate random data to test it:
+
+<img src="./imgs/nhe_points/1_generate_data.png" width=45% height=45%> <img src="./imgs/nhe_points/1_generate_data_1.PNG" width=45% height=45%>
 
 The settings of the data generator refer to the following properties:
 - `n_points`: Number of points to be created
@@ -11,12 +16,12 @@ The settings of the data generator refer to the following properties:
 
 The result (in 3D) will look like this:
 
-<img src="./docs/imgs/1_generate_data_2.png" width=45% height=45%>
+<img src="./imgs/nhe_points/1_generate_data_2.png" width=45% height=45%>
 
 ### Neighborhood definition:
 Napari-spatial-statistics provides a few basic algorithms to determine neighborhoods between points in space (e.g., k-nearest neighbors and distance-based neighborhood):
 
-<img src="./docs/imgs/2_neighborhood.png" width=45% height=45%>
+<img src="./imgs/nhe_points/2_neighborhood.png" width=45% height=45%>
 
 Currently implemented algorithms include:
 * [distance-based neighborhood (scipy)](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.cKDTree.query_ball_point.html#scipy.spatial.cKDTree.query_ball_point)
@@ -25,7 +30,7 @@ Currently implemented algorithms include:
 
 You can visualize the neighbors of each point by checking the `show neighborhood` checkbox. Clicking on an entry in the table will then highlight the respective point (white edge) and all of its neighbors (grey edge):
 
-<img src="./docs/imgs/2_neighborhood_1.png" width=45% height=45%>
+<img src="./imgs/nhe_points/2_neighborhood_1.png" width=45% height=45%>
 
 *Note:* Napari-spatial-statistics integrates with other methods of neighborhood. In order to use a custom neighborhood method, the list of neighbors for each point need to be stored in the layer's properties by using
 
@@ -43,7 +48,7 @@ napari-spatial-statistics currently supports neighborhood enrichment tests ([squ
 
 Select it from the tools dropdown menu:
 
-<img src="./docs/imgs/3_nhe_test.png" width=45% height=45%> <img src="./docs/imgs/3_nhe_test_1.png" width=45% height=45%>
+<img src="./imgs/nhe_points/3_nhe_test.png" width=45% height=45%> <img src="./imgs/nhe_points/3_nhe_test_1.png" width=45% height=45%>
 
 The dropdown menus allow to set 
 * The input layer on which to operate one
@@ -54,4 +59,4 @@ Running the test generates a neighborhood enrichment matrix that denotes the enr
 
 |Result for random points (`n_classes=3`)| Random for colocalized points (`n_classes=3, sigma=3.0`)|
 |--|--|
-|<img src="./docs/imgs/3_nhe_test_2.png" width=100% height=100%>|<img src="./docs/imgs/3_nhe_test_3.png" width=100% height=100%>|
+|<img src="./imgs/nhe_points/3_nhe_test_2.png" width=100% height=100%>|<img src="./imgs/nhe_points/3_nhe_test_3.png" width=100% height=100%>|
