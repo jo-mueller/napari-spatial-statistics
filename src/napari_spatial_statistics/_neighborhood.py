@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     import napari.types
 
 from napari_spatial_statistics._utils import adjacency_matrix_to_list_of_neighbors,\
-    set_features
+    add_features
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (scipy, nss)")
 def distance_ckdtree(points: Points, radius: float = 1,
@@ -24,8 +24,7 @@ def distance_ckdtree(points: Points, radius: float = 1,
     neighbors = tree.query_ball_point(points.data, r=radius)
 
     neighbors_str = [",".join(map(str, neighbors[i])) for i in range(len(neighbors))]
-    points.properties['neighbors'] = neighbors_str
-    set_features(points, points.properties)
+    add_features(points, 'neighbors', neighbors_str)
 
     if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
@@ -49,8 +48,8 @@ def distance_squidpy(points: Points, radius: float,
     adj_matrix = adata.obsp['spatial_connectivities'].toarray()
     lst_of_neighbors = adjacency_matrix_to_list_of_neighbors(adj_matrix)
 
-    points.properties['neighbors'] = [str(x)[1:-1] for x in list(lst_of_neighbors)]
-    set_features(points, points.properties)
+    neighbors_str = [str(x)[1:-1] for x in list(lst_of_neighbors)]
+    add_features(points, 'neighbors', neighbors_str)
 
     if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
@@ -73,8 +72,7 @@ def knearest_ckdtree(points: Points, n_neighbors: int = 5,
     # multiple items. Hence, we convert the list of neighbors to a string and
     # put it to the properties.
     neighbors_str = [",".join(map(str, neighbors[1][i])) for i in range(len(neighbors[1]))]
-    points.properties['neighbors'] = neighbors_str
-    set_features(points, points.properties)
+    add_features(points, 'neighbors', neighbors_str)
 
     if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
