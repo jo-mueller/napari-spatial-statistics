@@ -33,6 +33,23 @@ def set_features(layer, tabular_data):
     if hasattr(layer, "features"):
         layer.features = tabular_data
 
+def add_features(layer, key, data):
+    if hasattr(layer, 'properties'):
+        layer.properties[key] = data
+    if hasattr(layer, 'features'):
+        layer.features[key] = data
+
+def get_features(layer, key=None):
+    if hasattr(layer, 'properties'):
+        if key is None:
+            return layer.properties
+        else:
+            return layer.properties[key]
+    if hasattr(layer, 'features'):
+        if key is None:
+            return layer.features
+        else:
+            return layer.features[key]
 
 def properties_to_table(viewer: 'napari.viewer.Viewer',
                         points: Points):
