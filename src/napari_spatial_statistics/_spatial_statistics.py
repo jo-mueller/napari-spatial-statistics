@@ -30,8 +30,7 @@ from napari_tools_menu import register_dock_widget
 from napari.layers import Points
 from napari.types import PointsData
 
-from ._plot_widget import PlotWidget
-from napari_spatial_statistics._utils import list_of_neighbors_to_adjacency_matrix
+from ._utils import PlotWidget, list_of_neighbors_to_adjacency_matrix
 
 
 from typing import TYPE_CHECKING
