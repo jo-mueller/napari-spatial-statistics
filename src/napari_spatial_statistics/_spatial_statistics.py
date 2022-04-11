@@ -28,12 +28,12 @@ from magicgui.widgets import create_widget
 
 from napari_tools_menu import register_dock_widget
 from napari.layers import Points
-from napari.types import PointsData
+from napari.types import PointsData, ImageData
 
 from ._utils import PlotWidget, list_of_neighbors_to_adjacency_matrix
 
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
     import napari.types
 
@@ -141,3 +141,47 @@ def neighborhood_enrichment_test(points: PointsData,
     sq.pl.nhood_enrichment(adata, cluster_key=on_feature, ax=ax)
 
     return adata.uns[f'{on_feature}_nhood_enrichment']
+
+
+@register_dock_widget(menu="Measurement > Density map (vedo, nss)")
+def density_map(points: PointsData,
+                radius:float = None) -> ImageData:
+    """
+    Generate a density map from points data.
+
+    Parameters
+    ----------
+    points : PointsData
+    radius : float, optional
+        The local neighborhood is specified as the radius around each sample
+        position (each voxel). The default is None.
+    computeGradient : bool, optional
+        Turn on/off the generation of the gradient vector, gradient magnitude
+        scalar, and function classification scalar. By default this is off.
+        Note that this will increase execution time and the size of the output.
+        The default is False.
+
+    Returns
+    -------
+    ImageData
+
+    See also
+    --------
+    https://vedo.embl.es/autodocs/content/vedo/pointcloud.html
+
+
+    """
+    import vedo
+    import numpy as np
+    pointcloud = vedo.pointcloud.Points(points)
+    vol = pointcloud.density(radius=radius,
+                             dims=np.max(points, axis=0).astype(int))
+    ndims = points.shape[1]
+
+    # Somehow vedo returns a 3D volume with XYZ for 2D data
+    if ndims == 2:
+        vol = vol.tonumpy()[..., 0]
+    else:
+        vol = vol.tonumpy()
+
+    return vol
