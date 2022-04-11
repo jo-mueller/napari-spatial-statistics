@@ -5,7 +5,7 @@ from napari_spatial_statistics import make_random_points,\
 
 from napari_spatial_statistics._utils import get_features
 
-def tst_spatial_stats_nhe(make_napari_viewer):
+def test_spatial_stats_nhe(make_napari_viewer):
 
     from napari_spatial_statistics._neighborhood import knearest_ckdtree
     from napari_spatial_statistics._spatial_statistics import neighborhood_enrichment_test
@@ -16,7 +16,7 @@ def tst_spatial_stats_nhe(make_napari_viewer):
     pts = knearest_ckdtree(pts, n_neighbors=5)
     neighborhood_enrichment_test(viewer, pts)
 
-def tst_spatial_stats_nhe2(make_napari_viewer):
+def test_spatial_stats_nhe2(make_napari_viewer):
 
     from napari_spatial_statistics._neighborhood import distance_ckdtree
     from napari_spatial_statistics._spatial_statistics import neighborhood_enrichment_test
@@ -36,8 +36,7 @@ def tst_spatial_stats_nhe2(make_napari_viewer):
 
 def test_spatial_stats3(make_napari_viewer):
     from napari_spatial_statistics._neighborhood import distance_ckdtree
-    from napari_spatial_statistics._spatial_statistics import nhe_test_widget, neighborhood_enrichment_test
-    from napari_spatial_statistics._plot_widget import PlotWidget
+    from napari_spatial_statistics._spatial_statistics import neighborhood_enrichment_test
 
     viewer = make_napari_viewer()
 
@@ -47,9 +46,36 @@ def test_spatial_stats3(make_napari_viewer):
     distance_ckdtree(pts, radius=10, show_neighborhood=False)
 
     pts = viewer.layers[0]
-    result = neighborhood_enrichment_test(pts.data, get_features(pts),
-                                          on_feature='Cell type')
+    neighborhood_enrichment_test(pts.data, get_features(pts),
+                                 on_feature='Cell type')
 
-# if __name__ == '__main__':
-#     import napari
-#     test_spatial_stats3(napari.Viewer)
+def test_density_map(make_napari_viewer):
+
+    from napari_spatial_statistics._spatial_statistics import density_map
+    viewer = make_napari_viewer()
+    pts = make_random_points(spatial_size=100, n_classes=1)
+    viewer.add_points(pts[0], **pts[1])
+
+    density = density_map(pts[0])
+    viewer.add_image(density)
+    assert len(viewer.layers) == 2
+
+def test_density_map2(make_napari_viewer):
+
+    from napari_spatial_statistics import density_map
+    from napari_spatial_statistics import detect_maxima
+
+    viewer = make_napari_viewer()
+    viewer.open(r'C:\Users\johan\Desktop\DAPI-1.png')
+
+    pts = detect_maxima(viewer.layers[0],
+                        minimal_distance=2, threshold_value=30)
+    pts_layer = viewer.add_points(pts[0], **pts[1])
+    pts_layer.size = 2
+
+    density = density_map(pts[0])
+    viewer.add_image(density)
+
+if __name__ == '__main__':
+    import napari
+    test_density_map2(napari.Viewer)
