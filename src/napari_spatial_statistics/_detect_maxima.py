@@ -63,5 +63,4 @@ def detect_maxima(image: ImageData,
                                     min_distance=minimal_distance,
                                     exclude_border=exclude_border,
                                     threshold_abs=threshold_value)
-
     return points
