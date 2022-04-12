@@ -134,7 +134,7 @@ def neighborhood_enrichment_test(points: PointsData,
     adata = AnnData(points,
                     obs = {on_feature: pd.Categorical(properties[on_feature])},
                     obsp = {'spatial_connectivities': adj_matrix},
-                    obsm={"spatial3d": points.data},
+                    obsm={"spatial3d": points},
                     dtype=points.dtype)
 
     sq.gr.nhood_enrichment(adata, cluster_key=on_feature)
