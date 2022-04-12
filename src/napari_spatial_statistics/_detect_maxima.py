@@ -53,18 +53,15 @@ def merge_points_layers(viewer: napari.viewer.Viewer) -> LayerDataTuple:
     return (data, params, 'Points')
 
 @register_dock_widget(menu="Process > Peak detection (scikit-image, nss)")
-def detect_maxima(Image: Image,
+def detect_maxima(image: ImageData,
                   minimal_distance: int=10,
                   exclude_border: bool = True,
                   threshold_value: float = 100
                   ) -> LayerDataTuple:
 
-    points = feature.peak_local_max(Image.data,
+    points = feature.peak_local_max(image,
                                     min_distance=minimal_distance,
                                     exclude_border=exclude_border,
                                     threshold_abs=threshold_value)
-    props = {'size': Image.data.shape[0]/40,
-             'edge_width': 0,
-             'name': Image.name + '_maxima'}
 
-    return (points, props, 'points')
+    return points
