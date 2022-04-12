@@ -28,42 +28,38 @@ def brain_section() -> ImageData:
 def make_random_spots(n_spots: int = 1000,
                       n_classes: int = 2,
                       spatial_size: int = 100,
+                      randomness: float = 10,
                       sigma: float = 2,
                       dim: int = 3) -> List[LayerDataTuple]:
     from skimage import filters
 
-    images = []
+    positions = make_random_points(n_points=n_spots, n_classes=n_classes,
+                                   spatial_size=spatial_size,
+                                   randomness=randomness,
+                                   dim=dim)
+
+    # Turn spots into images
+    images = [None] * n_classes
+    offset = abs(np.min(positions[0], axis=0).flatten().astype(int))
+    dimensions = np.max(positions[0], axis=0).flatten().astype(int) +\
+        offset + 1
 
     for idx in range(n_classes):
-        image = np.zeros(spatial_size**dim, dtype=float)
-        locations = np.random.randint(0, spatial_size**dim, size=n_spots)
-        image[locations] = 1
-        image = np.reshape(image, newshape=([spatial_size] * dim))
+        image = np.zeros(dimensions)
+        props = positions[1]['properties']
+        locations = positions[0][props['Cell type'] == idx].astype(int) +\
+            offset[None, :]
+
+        image[[locations[:, i] for i in range(locations.shape[1])]] = 1
         image = filters.gaussian(image, sigma)
-        image = image/image.max()
-        images.append((image,
-                       {'name': f'Marker {idx}',
-                        'colormap': img_colors[idx]},
-                       'image'))
+        image = image / image.max()
+
+        images[idx] = (image,
+                      {'name': f'Marker {idx}',
+                      'colormap': img_colors[idx]},
+                      'image')
 
     return images
-
-# def make_random_points(n_points: int = 1000,
-#                         n_classes: int = 3,
-#                         spatial_size: int = 100,
-#                         dim: int = 3) -> List[LayerDataTuple]:
-
-#     data = spatial_size * np.random.random((n_points, dim))
-#     point_type = np.random.randint(0, n_classes, size=n_points)
-
-#     properties = {'Label': np.arange(0, n_points, 1), 'Cell type': point_type}
-#     props = {'name': 'Random points',
-#              'face_color': pt_colors[point_type],
-#              'edge_width': 0,
-#              'properties': properties,
-#              'size': spatial_size/40}
-
-#     return (data, props, 'points')
 
 def make_random_points(n_points: int = 1000,
                        n_classes: int = 3,
