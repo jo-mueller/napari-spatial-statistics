@@ -145,7 +145,7 @@ def neighborhood_enrichment_test(points: PointsData,
 
 @register_dock_widget(menu="Measurement > Density map (vedo, nss)")
 def density_map(points: PointsData,
-                radius:float = None) -> ImageData:
+                radius:float = 50) -> ImageData:
     """
     Generate a density map from points data.
 
