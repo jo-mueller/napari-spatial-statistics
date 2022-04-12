@@ -57,7 +57,7 @@ def detect_maxima(image: ImageData,
                   minimal_distance: int=10,
                   exclude_border: bool = True,
                   threshold_value: float = 100
-                  ) -> LayerDataTuple:
+                  ) -> PointsData:
 
     points = feature.peak_local_max(image,
                                     min_distance=minimal_distance,
