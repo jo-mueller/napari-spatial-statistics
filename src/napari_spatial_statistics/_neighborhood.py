@@ -8,7 +8,8 @@ if TYPE_CHECKING:
     import napari.types
 
 from napari_spatial_statistics._utils import adjacency_matrix_to_list_of_neighbors,\
-    add_features
+    add_features,\
+    get_features
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (scipy, nss)")
 def distance_ckdtree(points: Points, radius: float = 1,
@@ -28,6 +29,8 @@ def distance_ckdtree(points: Points, radius: float = 1,
 
     if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
+
+    return get_features(points)
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (squidpy, nss)")
 def distance_squidpy(points: Points, radius: float,
@@ -54,6 +57,8 @@ def distance_squidpy(points: Points, radius: float,
     if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
 
+    return get_features(points)
+
 @register_dock_widget(menu="Neighborhood > k-nearest neighbors (scipy, nss)")
 def knearest_ckdtree(points: Points, n_neighbors: int = 5,
                      show_neighborhood: bool = True,
@@ -76,3 +81,5 @@ def knearest_ckdtree(points: Points, n_neighbors: int = 5,
 
     if show_neighborhood and viewer is not None:
         properties_to_table(viewer, points)
+
+    return get_features(points)
