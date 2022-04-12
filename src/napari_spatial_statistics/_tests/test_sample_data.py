@@ -1,6 +1,6 @@
 from napari_spatial_statistics import make_random_points,\
-    make_non_random_points,\
-    make_random_spots
+    make_random_spots,\
+    detect_maxima
 import numpy as np
 
 
@@ -19,7 +19,7 @@ def test_correlated_data_generator(make_napari_viewer):
 
     viewer = make_napari_viewer()
 
-    pts = make_non_random_points()
+    pts = make_random_points()
     viewer.add_points(pts[0], **pts[1])
 
     assert len(viewer.layers) == 1
@@ -31,3 +31,8 @@ def test_spot_generation(make_napari_viewer):
     spots = make_random_spots(sigma=1.5)
     for k in range(len(spots)):
         viewer.add_image(spots[k][0], **spots[k][1])
+        detect_maxima(spots[k][0], threshold_value=0.1)
+
+if __name__ =='__main__':
+    import napari
+    test_spot_generation(napari.Viewer)
