@@ -7,19 +7,13 @@ def test_maxima_detection(make_napari_viewer):
     viewer = make_napari_viewer()
     spots = make_random_spots(sigma=1.5)
 
-    for k in range(len(spots)):
-        viewer.add_image(spots[k][0], **spots[k][1])
-
-    assert len(viewer.layers) == 2
-
-    pts_0 = detect_maxima(viewer.layers[0])
-    pts_1 = detect_maxima(viewer.layers[1])
-
-    viewer.add_points(pts_0[0], **pts_0[1])
-    viewer.add_points(pts_1[0], **pts_1[1])
+    for spot in spots:
+        viewer.add_points(detect_maxima(spot[0], threshold_value=0.1,
+                                        minimal_distance=3))
 
     merged_points = merge_points_layers(viewer)
-    viewer.add_points(merged_points[0], **merged_points[1])
+    fused_points = viewer.add_points(merged_points[0], **merged_points[1])
+    assert 'Point_type' in fused_points.properties.keys()
 
 def test_merging_points_layer(make_napari_viewer):
     from napari_spatial_statistics import merge_points_layers
@@ -53,4 +47,4 @@ def test_label_centroid_detection(make_napari_viewer):
 
 if __name__ == '__main__':
     import napari
-    test_label_centroid_detection(napari.Viewer)
+    test_maxima_detection(napari.Viewer)
