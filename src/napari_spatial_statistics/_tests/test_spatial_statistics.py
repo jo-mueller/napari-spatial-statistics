@@ -1,6 +1,5 @@
 import numpy as np
 from napari_spatial_statistics import make_random_points,\
-    make_non_random_points,\
     make_random_spots
 
 from napari_spatial_statistics._utils import get_features
@@ -62,18 +61,18 @@ def test_density_map(make_napari_viewer):
 
 def test_density_map2(make_napari_viewer):
 
-    from napari_spatial_statistics import density_map
-    from napari_spatial_statistics import detect_maxima
+    from napari_spatial_statistics import density_map, detect_maxima, brain_section
 
     viewer = make_napari_viewer()
-    viewer.open(r'C:\Users\johan\Desktop\DAPI-1.png')
+    image = brain_section()
+    viewer.add_image(image)
 
-    pts = detect_maxima(viewer.layers[0],
+    pts = detect_maxima(image,
                         minimal_distance=2, threshold_value=30)
-    pts_layer = viewer.add_points(pts[0], **pts[1])
+    pts_layer = viewer.add_points(pts)
     pts_layer.size = 2
 
-    density = density_map(pts[0])
+    density = density_map(pts)
     viewer.add_image(density)
 
 if __name__ == '__main__':
