@@ -5,7 +5,7 @@ import numpy as np
 
 def test_label_conversion():
 
-    from napari_napari_spatial_statistics import labels_to_points
+    from napari_spatial_statistics._detect_maxima import labels_to_points
     labels = np.array([
         [0, 0, 0, 0, 0],
         [1, 1, 0, 2, 2],
@@ -15,6 +15,7 @@ def test_label_conversion():
         ], dtype=int)
 
     points = labels_to_points(labels)
+    assert np.array_equal(np.asarray(points.shape), np.array([4, 2]))
 
 def test_maxima_detection(make_napari_viewer):
     from napari_spatial_statistics import detect_maxima
@@ -44,7 +45,7 @@ def test_merging_points_layer(make_napari_viewer):
     viewer.add_points(merged_points[0], **merged_points[1])
 
 def test_label_centroid_detection(make_napari_viewer):
-    from napari_spatial_statistics import labels_to_points
+    from napari_spatial_statistics._detect_maxima import labels_to_points
     from skimage import measure, filters
 
     viewer = make_napari_viewer()
@@ -62,4 +63,4 @@ def test_label_centroid_detection(make_napari_viewer):
 
 if __name__ == '__main__':
     import napari
-    test_maxima_detection(napari.Viewer)
+    test_label_centroid_detection(napari.Viewer)
