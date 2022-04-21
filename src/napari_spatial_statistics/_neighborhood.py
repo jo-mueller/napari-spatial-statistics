@@ -12,7 +12,8 @@ from napari_spatial_statistics._utils import adjacency_matrix_to_list_of_neighbo
     get_features
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (scipy, nss)")
-def distance_ckdtree(points: Points, radius: float = 1,
+def distance_ckdtree(points: Points,
+                     radius: float = 1.0,
                      show_neighborhood: bool = True,
                      viewer: 'napari.viewer.Viewer' = None):
 
@@ -33,7 +34,8 @@ def distance_ckdtree(points: Points, radius: float = 1,
     return get_features(points)
 
 @register_dock_widget(menu="Neighborhood > distance-neighborhood (squidpy, nss)")
-def distance_squidpy(points: Points, radius: float,
+def distance_squidpy(points: Points,
+                     radius: float = 1.0,
                      show_neighborhood: bool = True,
                      viewer: 'napari.viewer.Viewer' = None):
     from anndata import AnnData
@@ -42,8 +44,9 @@ def distance_squidpy(points: Points, radius: float,
     if isinstance(points, tuple):
         points = Points(points[0], **points[1])
 
-    adata = AnnData(points[0],obs = points[1]['properties'],
-                    obsm={"spatial3d": points[0]})
+    adata = AnnData(points.data,
+                    obs = points.properties,
+                    obsm={"spatial3d": points.data})
     sq.gr.spatial_neighbors(adata, coord_type="generic",
                             spatial_key="spatial3d", radius=radius)
 
@@ -60,7 +63,8 @@ def distance_squidpy(points: Points, radius: float,
     return get_features(points)
 
 @register_dock_widget(menu="Neighborhood > k-nearest neighbors (scipy, nss)")
-def knearest_ckdtree(points: Points, n_neighbors: int = 5,
+def knearest_ckdtree(points: Points,
+                     n_neighbors: int = 5,
                      show_neighborhood: bool = True,
                      viewer: 'napari.viewer.Viewer' = None):
 
