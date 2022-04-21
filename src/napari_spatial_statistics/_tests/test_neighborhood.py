@@ -1,18 +1,20 @@
-def test_neighborhood(make_napari_viewer):
+import napari
+
+def test_neighborhood():
 
     from napari_spatial_statistics._neighborhood import knearest_ckdtree,\
-        distance_ckdtree
+        distance_ckdtree, distance_squidpy
     from napari_spatial_statistics._sample_data import make_random_points
-    viewer = make_napari_viewer()
 
     pts = make_random_points()
-    viewer.add_points(pts[0], **pts[1])
 
-    knearest_ckdtree(viewer.layers[0], show_neighborhood=False)
-    distance_ckdtree(viewer.layers[0], show_neighborhood=False)
+    props_knearest = knearest_ckdtree(pts, show_neighborhood=False)
+    props_ckdtree = distance_ckdtree(pts, show_neighborhood=False)
+    props_squidpy = distance_squidpy(pts, show_neighborhood = False)
 
-    assert 'neighbors' in list(viewer.layers[0].properties.keys())
+    assert 'neighbors' in props_knearest.keys()
+    assert 'neighbors' in props_ckdtree.keys()
+    assert 'neighbors' in props_squidpy.keys()
 
 if __name__ == "__main__":
-    import napari
-    test_neighborhood(napari.Viewer)
+    test_neighborhood()

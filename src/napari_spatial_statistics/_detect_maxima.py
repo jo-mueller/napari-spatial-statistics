@@ -6,14 +6,25 @@ Created on Mon Mar 21 13:57:00 2022
 """
 
 from napari_tools_menu import register_dock_widget
-from napari.layers import Image, Points
-from napari.types import ImageData, LayerDataTuple
+from napari.layers import Points
+from napari.types import ImageData, LayerDataTuple, LabelsData, PointsData
 import napari
 import numpy as np
 
 from skimage import feature
 
 colors = np.array(['orange', 'blue', 'magenta', 'pink', 'red', 'green', 'yellow'])
+
+
+@register_dock_widget(menu="Process > Labels to Points (nss)")
+def labels_to_points(labels: LabelsData) -> PointsData:
+
+    from skimage import measure
+    props = measure.regionprops_table(labels, properties=['centroid'])
+    data = np.asarray([props[key] for key in props.keys()]).T
+
+    return data
+
 
 @register_dock_widget(menu="Process > Merge point layers (nss)")
 def merge_points_layers(viewer: napari.viewer.Viewer) -> LayerDataTuple:
@@ -42,18 +53,14 @@ def merge_points_layers(viewer: napari.viewer.Viewer) -> LayerDataTuple:
     return (data, params, 'Points')
 
 @register_dock_widget(menu="Process > Peak detection (scikit-image, nss)")
-def detect_maxima(Image: Image,
-                  minimal_distance: int=1,
+def detect_maxima(image: ImageData,
+                  minimal_distance: int=10,
                   exclude_border: bool = True,
-                  threshold_value: float = 0
-                  ) -> LayerDataTuple:
+                  threshold_value: float = 100
+                  ) -> PointsData:
 
-    points = feature.peak_local_max(Image.data,
+    points = feature.peak_local_max(image,
                                     min_distance=minimal_distance,
                                     exclude_border=exclude_border,
                                     threshold_abs=threshold_value)
-    props = {'size': Image.data.shape[0]/40,
-             'edge_width': 0,
-             'name': Image.name + '_maxima'}
-
-    return (points, props, 'points')
+    return points

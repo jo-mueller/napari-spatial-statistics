@@ -23,6 +23,7 @@ def test_utils2(make_napari_viewer):
     n_points = 1000
     pts = make_random_points(n_classes=3, n_points=n_points)
     pts = viewer.add_points(pts[0], **pts[1])
+    n_points = pts.data.shape[0]
 
     props = get_features(pts)
     assert 'Cell type' in list(props.keys())
