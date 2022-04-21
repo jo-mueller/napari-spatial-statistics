@@ -8,8 +8,7 @@ from ._spatial_statistics import nhe_test_widget,\
     density_map,\
     neighborhood_enrichment_test
 from ._detect_maxima import detect_maxima,\
-    merge_points_layers,\
-    labels_to_points
+    merge_points_layers
 
 from ._neighborhood import distance_ckdtree, distance_squidpy,\
     knearest_ckdtree
