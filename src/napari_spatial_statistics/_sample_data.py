@@ -51,8 +51,7 @@ def make_random_spots(n_spots: int = 1000,
             offset[None, :]
 
         image[[locations[:, i] for i in range(locations.shape[1])]] = 1
-        image = filters.gaussian(image, sigma)
-        image = image / image.max()
+        image = filters.gaussian(image, sigma) * 1000
 
         images[idx] = (image,
                       {'name': f'Marker {idx}',
