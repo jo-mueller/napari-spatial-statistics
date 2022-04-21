@@ -1,6 +1,21 @@
 from napari_spatial_statistics import make_random_points,\
     make_random_spots
 
+import numpy as np
+
+def test_label_conversion():
+
+    from napari_napari_spatial_statistics import labels_to_points
+    labels = np.array([
+        [0, 0, 0, 0, 0],
+        [1, 1, 0, 2, 2],
+        [1, 3, 3, 2, 2],
+        [0, 3, 3, 0, 4],
+        [0, 0, 0, 0, 4]
+        ], dtype=int)
+
+    points = labels_to_points(labels)
+
 def test_maxima_detection(make_napari_viewer):
     from napari_spatial_statistics import detect_maxima
     from napari_spatial_statistics import merge_points_layers
