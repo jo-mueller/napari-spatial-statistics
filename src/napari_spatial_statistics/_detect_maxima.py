@@ -6,7 +6,7 @@ Created on Mon Mar 21 13:57:00 2022
 """
 
 from napari_tools_menu import register_dock_widget
-from napari.layers import Points, Image
+from napari.layers import Points
 from napari.types import ImageData, LayerDataTuple, LabelsData, PointsData
 import napari
 import numpy as np
